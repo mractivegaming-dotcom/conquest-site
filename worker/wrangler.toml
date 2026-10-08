@@ -1,0 +1,25 @@
+# Conquest API: liten Cloudflare Worker som läser Open Cloud och serverar JSON till sajten.
+name = "conquest-api"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+UNIVERSE_ID = ""              # Universe ID för Conquest (Creator Hub > experience > Overview). Tomt = demo-läge.
+SEASON = "1"
+BOARDS = "Kills,Wins,Jets"    # lägg till ",Rating" när rankingsystemet skriver S6_S1_Rating
+STORE_PREFIX = ""             # tomt = "S6_S<SEASON>_" (matchar LeaderboardService.lua)
+SCOPE = "global"
+CACHE_SECONDS = "300"
+ALLOW_ORIGIN = "*"            # sätt till sajtens origin när den har en adress, t.ex. https://oscar.github.io
+
+# Hemligheten sätts aldrig här. Kör:  wrangler secret put ROBLOX_API_KEY
+# (i PowerShell utan att visa nyckeln:  $env:ROBLOX_API_KEY | wrangler secret put ROBLOX_API_KEY)
+
+# Valfritt men rekommenderat: KV för delad cache mellan alla edge-noder.
+# 1) wrangler kv namespace create CACHE   2) klistra in id nedan och ta bort kommentarstecknen
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = ""
+
+[triggers]
+crons = ["*/5 * * * *"]       # värmer cachen var femte minut så besökare aldrig väntar på Roblox

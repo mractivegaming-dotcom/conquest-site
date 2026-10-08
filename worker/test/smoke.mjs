@@ -1,0 +1,26 @@
+// Runs the Worker in demo mode (no key, no universe) and checks the JSON shapes. Usage: node worker/test/smoke.mjs
+import worker from '../src/index.js';
+const ctx = { waitUntil() {} };
+const env = { SEASON: '1', BOARDS: 'Kills,Wins,Jets,Rating' };
+const get = async p => { const r = await worker.fetch(new Request('https://api.test' + p), env, ctx); return [r.status, await r.json(), r.headers.get('access-control-allow-origin')]; };
+let fails = 0; const ok = (cond, msg) => { console.log((cond ? 'ok   ' : 'FAIL ') + msg); if (!cond) fails++; };
+const [s1, snap, cors] = await get('/api/snapshot');
+ok(s1 === 200 && snap.source === 'demo', 'snapshot 200 demo');
+ok(cors === '*', 'CORS header present');
+ok(Object.keys(snap.boards).length === 4 && snap.boards.kills.length === 100, 'four boards, 100 entries');
+ok(snap.boards.kills.every((e, i) => e.rank === i + 1 && (i === 0 || snap.boards.kills[i - 1].value >= e.value)), 'kills sorted and ranked');
+const [s2, lb] = await get('/api/leaderboard?board=wins&limit=25');
+ok(s2 === 200 && lb.entries.length === 25 && lb.board === 'wins', 'leaderboard limit works');
+const [s3, bad] = await get('/api/leaderboard?board=nope');
+ok(s3 === 404 && Array.isArray(bad.boards), 'unknown board is 404 with list');
+const [s4, live] = await get('/api/live');
+ok(s4 === 200 && live.playing === 1204, 'live stats');
+const [s5, pl] = await get('/api/player?name=Nordvakt');
+ok(s5 === 200 && pl.boards.kills.rank === 1, 'player lookup (demo)');
+const [s6] = await get('/api/player?name=x');
+ok(s6 === 400, 'bad name rejected');
+const [s7] = await get('/api/player?name=NobodyHere');
+ok(s7 === 404, 'unknown player 404');
+const r = await worker.fetch(new Request('https://api.test/api/live', { method: 'OPTIONS' }), env, ctx);
+ok(r.status === 204, 'OPTIONS preflight');
+console.log(fails ? `${fails} failing` : 'all good'); process.exit(fails ? 1 : 0);
