@@ -15,9 +15,9 @@
   <div>
     <div class="kicker">// season 1 · ends in <span data-countdown="">–</span></div>
     <h1 style="margin-top:12px">Ranks</h1>
-    <p class="lead" style="margin:14px 0 0;max-width:520px">Top 100 per board, refreshed every five minutes straight from the game. Rank tiers arrive with the season rating system.</p>
+    <p class="lead" style="margin:14px 0 0;max-width:520px">Seven chakras from Root to Crown. Rating moves after every match; the top 100 of every board refresh every five minutes straight from the game.</p>
   </div>
-  <div class="ladder" id="ladder"></div>
+  <div class="spine" id="ladder"></div>
 </div></section>
 <section class="ranks wrap">
   <div>
@@ -36,21 +36,22 @@
     <div class="seg"><span class="on">Season 1</span><span title="Available after the first season reset">All-time</span></div>
     <div class="tile"><h3>Live now</h3><div class="big" data-live="playing">–</div><p><span data-live="visits">–</span> visits all time · <span data-live="favorites">–</span> favorites</p></div>
     <div class="tile"><h3>Most jets downed · season</h3><div class="big" id="topjets">–</div><p id="topjets-p">–</p></div>
-    <div class="tile"><h3>Season 1 reward</h3><div class="reward"><div class="sw"></div><p>Reach <b>Major</b> or higher before the reset to unlock the Frostbite camo for every class.</p></div></div>
+    <div class="tile"><h3>Season 1 reward</h3><div class="reward"><div class="sw"></div><p>Reach <b>Third Eye</b> or higher before the reset to unlock the Frostbite camo for every class.</p></div></div>
     <div class="tile"><h3>Your rank</h3><p>Type your Roblox username in the search box to see your values and placement on every board. Sign-in profiles come later.</p></div>
   </aside>
 </section>
 <!--#foot-->
 <script>
-const TIERS=[["Recruit","#8d99a9",0],["Private","#95a35e",800],["Corporal","#7ee787",1000],["Sergeant","#4fd1ff",1200],["Lieutenant","#6c8cff",1400],["Captain","#b58cff",1600],["Major","#ffc857",1800],["General","#ff5a5a",2000]];
-const icon=c=>`<svg viewBox="0 0 24 24" style="color:${c}"><path d="M12 2.5l9 5.5-9 5.5-9-5.5z" fill="currentColor"/><path d="M3 14l9 5.5 9-5.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M3 18.5l9 5.5 9-5.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".5"/></svg>`;
+const TIERS=[["Root","#ff4b4b",0],["Sacral","#ff9a3c",800],["Solar","#ffd93b",1000],["Heart","#5fe07a",1200],["Throat","#4f8dff",1400],["Third Eye","#ff5ad6",1700],["Crown","#f4ecff",2000]];
+const icon=(c,size)=>window.orbSVG(c,size||18);
 const tierOf=r=>{let t=TIERS[0];for(const x of TIERS)if(r>=x[2])t=x;return t};
 const LABEL={kills:'Kills',wins:'Wins',jets:'Jets downed',rating:'Rating'};
+document.addEventListener('DOMContentLoaded',()=>{
 const fmt=n=>window.Save6Data.fmt(n);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DEMO_AVA=['img/soldier.png','img/holo.png','img/rig.png'];
 let SNAP=null, BOARD='kills';
-document.getElementById('ladder').innerHTML=TIERS.map((t,i)=>`<div class="t" style="--tc:${t[1]}">${icon(t[1])}<b>${t[0]}</b><span>${t[2]?fmt(t[2])+'+':'0+'}</span></div>`).join('');
+document.getElementById('ladder').innerHTML=TIERS.slice().reverse().map((t,i)=>`<div class="s" style="--tc:${t[1]}">${icon(t[1],40)}<div><b>${t[0]}</b><span>${t[2]?fmt(t[2])+'+':'0+'} · ${7-i}/7</span></div></div>`).join('');
 function ava(e,i,big){ if(e.avatar) return `<div class="ava"><img src="${esc(e.avatar)}" alt="" style="position:static;height:100%;width:100%;transform:none"></div>`; if(SNAP.source!=='live'&&DEMO_AVA[i]) return `<div class="ava"><img src="${DEMO_AVA[i]}" alt=""></div>`; const ini=esc((e.displayName||e.name||'?').slice(0,2).toUpperCase()); return `<div class="ava" style="display:grid;place-items:center;font:800 ${big?30:24}px var(--display);color:var(--muted)">${ini}</div>`; }
 function others(e){ return Object.keys(SNAP.boards).filter(k=>Array.isArray(SNAP.boards[k])&&k!==BOARD).map(k=>{const hit=SNAP.boards[k].find(x=>x.userId===e.userId);return `<div>${LABEL[k]||k}<b>${hit?fmt(hit.value):'–'}</b></div>`}).join(''); }
 function render(){
@@ -65,8 +66,9 @@ function render(){
   document.getElementById('rows').innerHTML=list.slice(3,100).map(e=>{const t=isRating?tierOf(e.value):null;return `<tr><td class="pos">${e.rank}</td><td><span class="pl">${e.avatar?`<i style="background:url(${esc(e.avatar)}) center/cover"></i>`:'<i></i>'}${esc(e.displayName||e.name||e.userId)}</span></td>${t?`<td><span class="tier" style="--tc:${t[1]}">${icon(t[1])}${t[0]}</span></td>`:''}<td class="r">${fmt(e.value)}</td>${otherKeys.map(k=>{const h=(SNAP.boards[k]||[]).find(x=>x.userId===e.userId);return `<td class="n">${h?fmt(h.value):'–'}</td>`}).join('')}</tr>`}).join('');
   const jets=(SNAP.boards.jets||[])[0]; if(jets){document.getElementById('topjets').textContent=fmt(jets.value);document.getElementById('topjets-p').textContent=`${jets.displayName||jets.name}${(SNAP.boards.jets[1])?`. Second: ${SNAP.boards.jets[1].displayName||SNAP.boards.jets[1].name} with ${fmt(SNAP.boards.jets[1].value)}.`:''}`}
 }
-document.addEventListener('save6:snapshot',ev=>{SNAP=ev.detail; if(!SNAP.boards[BOARD]) BOARD=Object.keys(SNAP.boards)[0]; render()});
+window.Save6Data.snapshot.then(snap=>{SNAP=snap; if(SNAP.boards.rating) BOARD='rating'; else if(!SNAP.boards[BOARD]) BOARD=Object.keys(SNAP.boards)[0]; render()});
 document.getElementById('search').addEventListener('submit',async ev=>{ev.preventDefault();const q=document.getElementById('q').value.trim();const out=document.getElementById('result');if(!q)return;out.innerHTML='<div class="tile"><p>Searching…</p></div>';try{const p=await window.Save6Data.player(q);if(!p){out.innerHTML=`<div class="tile"><h3>${esc(q)}</h3><p>Not found on any board this season.</p></div>`;return}out.innerHTML=`<div class="tile"><div style="display:flex;gap:12px;align-items:center">${p.avatar?`<img src="${esc(p.avatar)}" alt="" style="width:48px;height:48px;border-radius:50%">`:''}<div><h3 style="margin:0">${esc(p.displayName||p.name)}</h3><p style="margin:0">@${esc(p.name)}</p></div></div><div class="kv" style="display:flex;gap:18px;margin-top:12px;font:12px var(--mono);color:var(--muted)">${Object.entries(p.boards).map(([k,v])=>`<div>${LABEL[k]||k}<b style="display:block;color:var(--text);font-size:15px">${fmt(v.value)}${v.rank?` <span class="muted">#${v.rank}</span>`:''}</b></div>`).join('')}</div></div>`}catch(e){out.innerHTML='<div class="tile"><p>Search is unavailable right now.</p></div>'}});
+});
 </script>
 </body>
 </html>

@@ -30,6 +30,15 @@ function blockyAvatarSVG(size){
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minx-2} ${miny-2} ${maxx-minx+4} ${maxy-miny+4}" width="${(maxx-minx+4)}" height="${(maxy-miny+4)}">${s}</svg>`;
 }
 
+// Chakra orb: glowing sphere with a spiral, used for rank tiers.
+let _orbN=0;
+function orbSVG(color,size){
+  size=size||18; let d=''; const turns=2.6, steps=96;
+  for(let i=0;i<=steps;i++){const t=i/steps,a=t*turns*2*Math.PI,r=1+t*7.6;d+=(i?'L':'M')+(12+r*Math.cos(a)).toFixed(2)+' '+(12+r*Math.sin(a)).toFixed(2)}
+  const id='orb'+(_orbN++);
+  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="color:${color}"><defs><radialGradient id="${id}"><stop offset="0" stop-color="#fff"/><stop offset=".42" stop-color="${color}"/><stop offset="1" stop-color="${color}" stop-opacity=".12"/></radialGradient></defs><circle cx="12" cy="12" r="11.5" fill="url(#${id})"/><path d="${d}" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.1" stroke-linecap="round"/></svg>`;
+}
+window.orbSVG=orbSVG;
 function particles(el,seed,count,xmin,xmax){
   const r=rng(seed);let h='';
   for(let i=0;i<count;i++){

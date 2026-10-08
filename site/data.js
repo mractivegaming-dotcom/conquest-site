@@ -5,7 +5,7 @@
   function demo(){
     let s=1337>>>0; const r=()=>((s=(s*1664525+1013904223)>>>0)/4294967296);
     const mk=(top,decay)=>Array.from({length:100},(_,i)=>{const name=NAMES[i]||`Operator_${(i*37)%997}`;return {rank:i+1,userId:100000+i,name,displayName:name,avatar:null,value:Math.max(1,Math.round(top*Math.pow(decay,i)*(0.9+0.2*r())))}}).sort((a,b)=>b.value-a.value).map((e,i)=>({...e,rank:i+1}));
-    return {season:CFG.season||1,source:'demo',updated:new Date().toISOString(),boards:{kills:mk(4820,0.975),wins:mk(312,0.97),jets:mk(71,0.95),rating:mk(2418,0.995)},live:{playing:1204,visits:1873302,favorites:42117}};
+    return {season:CFG.season||1,source:'demo',updated:new Date().toISOString(),boards:{kills:mk(4820,0.975),wins:mk(312,0.97),jets:mk(71,0.95),rating:mk(2418,0.99)},live:{playing:1204,visits:1873302,favorites:42117}};
   }
   async function load(){
     if(!CFG.api) return demo();

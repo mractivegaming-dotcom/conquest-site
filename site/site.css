@@ -131,9 +131,9 @@ h3{font-weight:800;font-size:20px;letter-spacing:.04em}
 .card .kicker{display:block;margin-bottom:8px}
 
 /* ---------- ranks ---------- */
-.banner{position:relative;height:300px;background:url(img/bg-armory.jpg) center 38%/cover no-repeat;border-bottom:1px solid var(--line)}
+.banner{position:relative;height:470px;background:url(img/bg-armory.jpg) center 62%/cover no-repeat;border-bottom:1px solid var(--line)}
 .banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,9,13,.96) 0%,rgba(7,9,13,.78) 45%,rgba(7,9,13,.35) 100%),linear-gradient(180deg,rgba(7,9,13,.2),rgba(7,9,13,.95))}
-.banner .wrap{position:relative;z-index:1;height:100%;display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:30px}
+.banner .wrap{position:relative;z-index:1;height:100%;display:flex;align-items:center;justify-content:space-between;padding-bottom:0}
 .banner h1{font-size:84px}
 .ladder{display:flex;gap:10px;align-items:flex-end}
 .ladder .t{display:flex;flex-direction:column;align-items:center;gap:6px;font:10px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:92px}
@@ -244,3 +244,12 @@ table.lb .n{font-family:var(--mono);color:var(--muted)}
   .weapons,.vehicles{grid-template-columns:1fr}
   .foot{flex-direction:column;gap:10px;align-items:flex-start}
 }
+
+/* chakra spine (rank tiers) */
+.spine{position:relative;display:flex;flex-direction:column;gap:8px;padding:16px 26px 16px 16px;border-radius:44px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.015));border:1px solid var(--line);backdrop-filter:blur(6px)}
+.spine::before{content:"";position:absolute;left:35px;top:24px;bottom:24px;width:3px;border-radius:2px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.35) 40%,rgba(255,75,75,.5));filter:blur(1.2px);opacity:.8}
+.spine .s{position:relative;display:flex;align-items:center;gap:16px;font:10px/1.35 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.spine .s b{display:block;color:var(--text);font-size:12px;letter-spacing:.14em}
+.spine .s svg{flex:none;filter:drop-shadow(0 0 14px var(--tc)) drop-shadow(0 0 3px rgba(255,255,255,.8))}
+.tier svg{filter:drop-shadow(0 0 7px var(--tc,transparent))}
+@media (max-width:860px){.spine{align-self:flex-start}}

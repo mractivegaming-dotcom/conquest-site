@@ -102,7 +102,7 @@ function demoSnapshot(c) {
     const name = DEMO_NAMES[i] || `Operator_${(i * 37) % 997}`;
     return { rank: i + 1, userId: 100000 + i, name, displayName: name, avatar: null, value: Math.max(1, Math.round(top * Math.pow(decay, i) * (0.9 + 0.2 * r()))) };
   }).sort((a, b) => b.value - a.value).map((e, i) => ({ ...e, rank: i + 1 }));
-  const boards = { kills: mk(4820, 0.975), wins: mk(312, 0.97), jets: mk(71, 0.95), rating: mk(2418, 0.995) };
+  const boards = { kills: mk(4820, 0.975), wins: mk(312, 0.97), jets: mk(71, 0.95), rating: mk(2418, 0.99) };
   return { season: c.season, source: 'demo', updated: new Date().toISOString(), ttl: c.ttl, boards, live: { playing: 1204, visits: 1873302, favorites: 42117, name: 'Conquest', maxPlayers: 24 } };
 }
 

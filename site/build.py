@@ -8,7 +8,7 @@ DIST.mkdir(exist_ok=True)
 for d in ['img','fonts']:
     if (DIST/d).exists(): shutil.rmtree(DIST/d)
     shutil.copytree(ROOT/d, DIST/d)
-for f in ['site.css','site.js']: shutil.copy(ROOT/f, DIST/f)
+for f in list(ROOT.glob('*.css'))+list(ROOT.glob('*.js')): shutil.copy(f, DIST/f.name)
 for page in ROOT.glob('*.html'):
     if page.name.startswith('_'): continue
     html=page.read_text()
