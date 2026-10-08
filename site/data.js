@@ -29,8 +29,8 @@
     document.querySelectorAll('a[data-link="game"]').forEach(a=>a.href=CFG.gameUrl||'#');
     document.querySelectorAll('a[data-link="discord"]').forEach(a=>a.href=CFG.discordUrl||'#');
     const snap=await window.Save6Data.snapshot;
-    document.querySelectorAll('[data-live]').forEach(e=>{e.textContent=fmt((snap.live||{})[e.dataset.live])});
-    document.querySelectorAll('[data-board-sum]').forEach(e=>{const l=snap.boards[e.dataset.boardSum]||[];e.textContent=fmt(l.reduce((a,x)=>a+x.value,0))});
+    document.querySelectorAll('[data-live]').forEach(e=>{const v=(snap.live||{})[e.dataset.live]; if(typeof v==='number'&&window.countUp) window.countUp(e,v); else e.textContent=fmt(v)});
+    document.querySelectorAll('[data-board-sum]').forEach(e=>{const l=snap.boards[e.dataset.boardSum]||[];const v=l.reduce((a,x)=>a+x.value,0); if(window.countUp) window.countUp(e,v); else e.textContent=fmt(v)});
     document.querySelectorAll('[data-source]').forEach(e=>{e.textContent=snap.source==='live'?'live data · updated '+new Date(snap.updated).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}):'demo data'; e.classList.toggle('is-demo',snap.source!=='live')});
     document.dispatchEvent(new CustomEvent('save6:snapshot',{detail:snap}));
   });

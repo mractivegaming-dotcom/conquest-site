@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ranks · Conquest</title>
 <link rel="stylesheet" href="site.css">
+<script>document.documentElement.classList.add("js")</script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="site.js" defer></script>
@@ -34,10 +35,10 @@
     <div id="result"></div>
     <div class="seg" id="boards"></div>
     <div class="seg"><span class="on">Season 1</span><span title="Available after the first season reset">All-time</span></div>
-    <div class="tile"><h3>Live now</h3><div class="big" data-live="playing">–</div><p><span data-live="visits">–</span> visits all time · <span data-live="favorites">–</span> favorites</p></div>
-    <div class="tile"><h3>Most jets downed · season</h3><div class="big" id="topjets">–</div><p id="topjets-p">–</p></div>
-    <div class="tile"><h3>Season 1 reward</h3><div class="reward"><div class="sw"></div><p>Reach <b>Third Eye</b> or higher before the reset to unlock the Frostbite camo for every class.</p></div></div>
-    <div class="tile"><h3>Your rank</h3><p>Type your Roblox username in the search box to see your values and placement on every board. Sign-in profiles come later.</p></div>
+    <div class="tile rv"><h3>Live now</h3><div class="big" data-live="playing">–</div><p><span data-live="visits">–</span> visits all time · <span data-live="favorites">–</span> favorites</p></div>
+    <div class="tile rv"><h3>Most jets downed · season</h3><div class="big" id="topjets">–</div><p id="topjets-p">–</p></div>
+    <div class="tile rv"><h3>Season 1 reward</h3><div class="reward"><div class="sw"></div><p>Reach <b>Third Eye</b> or higher before the reset to unlock the Frostbite camo for every class.</p></div></div>
+    <div class="tile rv"><h3>Your rank</h3><p>Type your Roblox username in the search box to see your values and placement on every board. Sign-in profiles come later.</p></div>
   </aside>
 </section>
 <!--#foot-->
@@ -60,14 +61,18 @@ function render(){
   document.querySelectorAll('#boards [data-b]').forEach(el=>el.onclick=()=>{BOARD=el.dataset.b;render()});
   const isRating=BOARD==='rating';
   const podIdx=[1,0,2];
-  document.getElementById('podium').innerHTML=podIdx.map(i=>{const e=list[i]; if(!e) return '<div class="pod"></div>'; const n=i+1; const t=isRating?tierOf(e.value):null; return `<div class="pod ${n===1?'first':''}"><div class="num">${n}</div>${ava(e,i,n===1)}${t?`<div class="tier" style="--tc:${t[1]}">${icon(t[1])}${t[0]}</div>`:`<div class="tier">${LABEL[BOARD]} · season ${SNAP.season}</div>`}<div class="name" style="margin-top:8px">${esc(e.displayName||e.name||e.userId)}</div><div class="rating">${fmt(e.value)}</div><div class="sub">${esc(e.name&&e.displayName&&e.name!==e.displayName?'@'+e.name:'')}</div><div class="kv">${others(e)}</div></div>`}).join('');
+  document.getElementById('podium').innerHTML=podIdx.map(i=>{const e=list[i]; if(!e) return '<div class="pod"></div>'; const n=i+1; const t=isRating?tierOf(e.value):null; return `<div class="pod rv tilt ${n===1?'first':''}" data-u="${e.userId}"><div class="num">${n}</div>${ava(e,i,n===1)}${t?`<div class="tier" style="--tc:${t[1]}">${icon(t[1])}${t[0]}</div>`:`<div class="tier">${LABEL[BOARD]} · season ${SNAP.season}</div>`}<div class="name" style="margin-top:8px">${esc(e.displayName||e.name||e.userId)}</div><div class="rating">${fmt(e.value)}</div><div class="sub">${esc(e.name&&e.displayName&&e.name!==e.displayName?'@'+e.name:'')}</div><div class="kv">${others(e)}</div></div>`}).join('');
   const otherKeys=boards.filter(k=>k!==BOARD);
   document.getElementById('head').innerHTML=`<tr><th>#</th><th>Player</th>${isRating?'<th>Tier</th>':''}<th>${LABEL[BOARD]||BOARD}</th>${otherKeys.map(k=>`<th>${LABEL[k]||k}</th>`).join('')}</tr>`;
-  document.getElementById('rows').innerHTML=list.slice(3,100).map(e=>{const t=isRating?tierOf(e.value):null;return `<tr><td class="pos">${e.rank}</td><td><span class="pl">${e.avatar?`<i style="background:url(${esc(e.avatar)}) center/cover"></i>`:'<i></i>'}${esc(e.displayName||e.name||e.userId)}</span></td>${t?`<td><span class="tier" style="--tc:${t[1]}">${icon(t[1])}${t[0]}</span></td>`:''}<td class="r">${fmt(e.value)}</td>${otherKeys.map(k=>{const h=(SNAP.boards[k]||[]).find(x=>x.userId===e.userId);return `<td class="n">${h?fmt(h.value):'–'}</td>`}).join('')}</tr>`}).join('');
-  const jets=(SNAP.boards.jets||[])[0]; if(jets){document.getElementById('topjets').textContent=fmt(jets.value);document.getElementById('topjets-p').textContent=`${jets.displayName||jets.name}${(SNAP.boards.jets[1])?`. Second: ${SNAP.boards.jets[1].displayName||SNAP.boards.jets[1].name} with ${fmt(SNAP.boards.jets[1].value)}.`:''}`}
+  document.getElementById('rows').innerHTML=list.slice(3,100).map(e=>{const t=isRating?tierOf(e.value):null;return `<tr data-u="${e.userId}"><td class="pos">${e.rank}</td><td><span class="pl">${e.avatar?`<i style="background:url(${esc(e.avatar)}) center/cover"></i>`:'<i></i>'}${esc(e.displayName||e.name||e.userId)}</span></td>${t?`<td><span class="tier" style="--tc:${t[1]}">${icon(t[1])}${t[0]}</span></td>`:''}<td class="r">${fmt(e.value)}</td>${otherKeys.map(k=>{const h=(SNAP.boards[k]||[]).find(x=>x.userId===e.userId);return `<td class="n">${h?fmt(h.value):'–'}</td>`}).join('')}</tr>`}).join('');
+  document.querySelectorAll('#rows tr[data-u], .pod[data-u]').forEach(el=>el.onclick=()=>showEntry(+el.dataset.u));
+  if(window.reveal) window.reveal();
+  const jets=(SNAP.boards.jets||[])[0]; if(jets){if(window.countUp) window.countUp(document.getElementById('topjets'),jets.value); else document.getElementById('topjets').textContent=fmt(jets.value);document.getElementById('topjets-p').textContent=`${jets.displayName||jets.name}${(SNAP.boards.jets[1])?`. Second: ${SNAP.boards.jets[1].displayName||SNAP.boards.jets[1].name} with ${fmt(SNAP.boards.jets[1].value)}.`:''}`}
 }
 window.Save6Data.snapshot.then(snap=>{SNAP=snap; if(SNAP.boards.rating) BOARD='rating'; else if(!SNAP.boards[BOARD]) BOARD=Object.keys(SNAP.boards)[0]; render()});
-document.getElementById('search').addEventListener('submit',async ev=>{ev.preventDefault();const q=document.getElementById('q').value.trim();const out=document.getElementById('result');if(!q)return;out.innerHTML='<div class="tile"><p>Searching…</p></div>';try{const p=await window.Save6Data.player(q);if(!p){out.innerHTML=`<div class="tile"><h3>${esc(q)}</h3><p>Not found on any board this season.</p></div>`;return}out.innerHTML=`<div class="tile"><div style="display:flex;gap:12px;align-items:center">${p.avatar?`<img src="${esc(p.avatar)}" alt="" style="width:48px;height:48px;border-radius:50%">`:''}<div><h3 style="margin:0">${esc(p.displayName||p.name)}</h3><p style="margin:0">@${esc(p.name)}</p></div></div><div class="kv" style="display:flex;gap:18px;margin-top:12px;font:12px var(--mono);color:var(--muted)">${Object.entries(p.boards).map(([k,v])=>`<div>${LABEL[k]||k}<b style="display:block;color:var(--text);font-size:15px">${fmt(v.value)}${v.rank?` <span class="muted">#${v.rank}</span>`:''}</b></div>`).join('')}</div></div>`}catch(e){out.innerHTML='<div class="tile"><p>Search is unavailable right now.</p></div>'}});
+function playerCard(p){return `<div class="tile"><div style="display:flex;gap:12px;align-items:center">${p.avatar?`<img src="${esc(p.avatar)}" alt="" style="width:48px;height:48px;border-radius:50%">`:''}<div><h3 style="margin:0">${esc(p.displayName||p.name)}</h3><p style="margin:0" class="muted">@${esc(p.name)}</p></div></div><div class="kv" style="display:flex;gap:18px;margin-top:12px;font:12px var(--mono);color:var(--muted);flex-wrap:wrap">${Object.entries(p.boards).map(([k,v])=>`<div>${LABEL[k]||k}<b style="display:block;color:var(--text);font-size:15px">${fmt(v.value)}${v.rank?` <span class="muted">#${v.rank}</span>`:''}</b></div>`).join('')}</div></div>`}
+function showEntry(userId){ const boards={}; let who=null; for(const [k,l] of Object.entries(SNAP.boards)){ if(!Array.isArray(l)) continue; const e=l.find(x=>x.userId===userId); if(e){boards[k]={value:e.value,rank:e.rank}; who=who||e} } if(!who) return; const out=document.getElementById('result'); out.innerHTML=playerCard({name:who.name,displayName:who.displayName,avatar:who.avatar,boards}); out.scrollIntoView({block:'nearest',behavior:'smooth'}); if(window.toast) window.toast((who.displayName||who.name)+' · '+Object.keys(boards).length+' boards'); }
+document.getElementById('search').addEventListener('submit',async ev=>{ev.preventDefault();const q=document.getElementById('q').value.trim();const out=document.getElementById('result');if(!q)return;out.innerHTML='<div class="tile"><p>Searching…</p></div>';try{const p=await window.Save6Data.player(q);if(!p){out.innerHTML=`<div class="tile"><h3>${esc(q)}</h3><p>Not found on any board this season.</p></div>`;return}out.innerHTML=playerCard(p)}catch(e){out.innerHTML='<div class="tile"><p>Search is unavailable right now.</p></div>'}});
 });
 </script>
 </body>

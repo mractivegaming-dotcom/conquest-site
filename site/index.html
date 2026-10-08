@@ -6,6 +6,7 @@
 <title>Conquest</title>
 <meta name="description" content="Conquest reprograms the Roblox avatar into a full operator. Five classes, vehicles, jets, and an NLAW that locks on.">
 <link rel="stylesheet" href="site.css">
+<script>document.documentElement.classList.add("js")</script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="site.js" defer></script>
@@ -18,34 +19,37 @@
     <h1 style="margin-top:14px">Reprogram<br>your avatar.</h1>
     <p class="lead">Conquest strips the blocky rig and compiles a full operator. Five classes. Jets, helicopters, bikes. An NLAW that actually locks on.</p>
     <div class="cta"><a class="btn btn-primary" data-link="game" href="#"><span class="ico"></span>Play on Roblox</a><a class="btn btn-ghost" data-link="discord" href="#">Join Discord</a></div>
-<pre class="term"><span class="p">&gt;</span> load <span class="k">avatar.rbxm</span> ................... <b>OK</b>
-<span class="p">&gt;</span> strip <span class="k">blocky_rig</span> (R6) ............. <b>OK</b>
-<span class="p">&gt;</span> inject <span class="k">operator.rig</span> ................ <b>OK</b>
-<span class="p">&gt;</span> compile <span class="k">camo_shader</span> + <span class="k">nvg</span> ........ <span class="p">78%</span>
-<span class="p">&gt;</span> deploy to <span class="k">FOREST_NORTH</span> ............. <span class="q">queued</span></pre>
+<div class="term">
+<div class="ln"><span class="p">&gt;</span> load <span class="k">avatar.rbxm</span> ................... <b>OK</b></div>
+<div class="ln"><span class="p">&gt;</span> strip <span class="k">blocky_rig</span> (R6) ............. <b>OK</b></div>
+<div class="ln"><span class="p">&gt;</span> inject <span class="k">operator.rig</span> ................ <b>OK</b></div>
+<div class="ln"><span class="p">&gt;</span> compile <span class="k">camo_shader</span> + <span class="k">nvg</span> ........ <b>OK</b></div>
+<div class="ln"><span class="p">&gt;</span> deploy to <span class="k">FOREST_NORTH</span> ............. <span class="v q">queued</span></div>
+</div>
   </div>
   <div class="stage panel">
-    <div class="stage-head"><span class="kicker">Reprogramming sequence</span><span class="prog">78% <i class="pbar"><b style="width:78%"></b></i></span></div>
+    <div class="stage-head"><span class="kicker">Reprogramming sequence</span><span class="prog">0% <i class="pbar"><b style="width:0%"></b></i></span><button class="replay" type="button">Replay</button></div>
+    <div class="flash"></div>
     <div class="floor"></div>
     <pre class="hex" data-hex="7,24"></pre>
     <div class="beam"></div>
     <div class="dust" data-particles="11,72,60,86"></div>
-    <figure class="fig f1"><div class="ring" style="--rc:#ff7a45"></div><div class="noob" data-blocky="262"></div><figcaption>01 · avatar.rbxm<span>decompiled</span></figcaption></figure>
-    <figure class="fig f2"><div class="ring" style="--rc:#b58cff"></div><img src="img/rig.png" alt="Rig"><figcaption>02 · rig rewrite<span>ok</span></figcaption></figure>
-    <figure class="fig f3"><div class="ring" style="--rc:#4fd1ff"></div><div class="holo"><img src="img/holo.png" alt="Hologram"><i></i></div><figcaption>03 · shader compile<span>78%</span></figcaption></figure>
-    <figure class="fig f4"><div class="ring" style="--rc:#ffffff"></div><img class="op" src="img/soldier.png" alt="Operator"><figcaption>04 · operator ready<span>deploy</span></figcaption></figure>
+    <figure class="fig f1"><div class="tip"><b>Avatar.rbxm</b>Your Roblox avatar as it arrives: R6 rig, blocky parts, default face.</div><div class="ring" style="--rc:#ff7a45"></div><div class="noob" data-blocky="262"></div><figcaption>01 · avatar.rbxm<span>decompiled</span></figcaption></figure>
+    <figure class="fig f2"><div class="tip"><b>Rig rewrite</b>Bones are remapped to the operator skeleton: 15 joints, IK for the launcher carry.</div><div class="ring" style="--rc:#b58cff"></div><img src="img/rig.png" alt="Rig"><figcaption>02 · rig rewrite<span>ok</span></figcaption></figure>
+    <figure class="fig f3"><div class="tip"><b>Shader compile</b>Camo, helmet and night-vision materials compile while the hologram shows the target.</div><div class="ring" style="--rc:#4fd1ff"></div><div class="holo"><img src="img/holo.png" alt="Hologram"><i></i></div><figcaption>03 · shader compile<span>78%</span></figcaption></figure>
+    <figure class="fig f4"><div class="tip"><b>Operator ready</b>Deployed with class loadout. Pick Assault, Engineer, Recon, Support or go sidearms only.</div><div class="ring" style="--rc:#ffffff"></div><img class="op" src="img/soldier.png" alt="Operator"><figcaption>04 · operator ready<span>deploy</span></figcaption></figure>
   </div>
 </section>
 <section class="stats wrap">
-  <div class="tile"><div class="n" data-live="playing">–</div><div class="l">players online</div></div>
-  <div class="tile"><div class="n" data-live="visits">–</div><div class="l">total visits</div></div>
-  <div class="tile"><div class="n" data-board-sum="jets">–</div><div class="l">jets downed · top 100</div></div>
-  <div class="tile"><div class="n" data-countdown="">–</div><div class="l">until season 1 ends</div></div>
+  <div class="tile rv"><div class="n" data-live="playing">–</div><div class="l">players online</div></div>
+  <div class="tile rv"><div class="n" data-live="visits">–</div><div class="l">total visits</div></div>
+  <div class="tile rv"><div class="n" data-board-sum="jets">–</div><div class="l">jets downed · top 100</div></div>
+  <div class="tile rv"><div class="n" data-countdown="">–</div><div class="l">until season 1 ends</div></div>
 </section>
 <section class="feat wrap">
-  <a class="card" href="arsenal.html" style="background-image:url(img/bg-armory.jpg)"><div class="c"><span class="kicker">Arsenal</span><h3>Five classes, one wall</h3><p>Assault, Engineer, Recon, Support, Sidearms. Every stat the game actually uses.</p><span class="go">Open the arsenal</span></div></a>
-  <a class="card" href="arsenal.html#vehicles" style="background-image:url(img/bg-hangar.jpg);background-position:left center"><div class="c"><span class="kicker">Vehicles</span><h3>From dirt bike to F-14</h3><p>Jets, helicopters, bikes and a jetski. Bail out before the ground does it for you.</p><span class="go">See the hangar</span></div></a>
-  <a class="card" href="ranks.html" style="background-image:url(img/bg-nlaw.jpg);background-position:center 30%"><div class="c"><span class="kicker">Ranks</span><h3>Root to Crown</h3><p>Seven chakra tiers. Rating after every match, seasons with rewards, a leaderboard you can link to.</p><span class="go">Check the leaderboard</span></div></a>
+  <a class="card rv tilt" href="arsenal.html" style="background-image:url(img/bg-armory.jpg)"><div class="c"><span class="kicker">Arsenal</span><h3>Five classes, one wall</h3><p>Assault, Engineer, Recon, Support, Sidearms. Every stat the game actually uses.</p><span class="go">Open the arsenal</span></div></a>
+  <a class="card rv tilt" href="arsenal.html#vehicles" style="background-image:url(img/bg-hangar.jpg);background-position:left center"><div class="c"><span class="kicker">Vehicles</span><h3>From dirt bike to F-14</h3><p>Jets, helicopters, bikes and a jetski. Bail out before the ground does it for you.</p><span class="go">See the hangar</span></div></a>
+  <a class="card rv tilt" href="ranks.html" style="background-image:url(img/bg-nlaw.jpg);background-position:center 30%"><div class="c"><span class="kicker">Ranks</span><h3>Root to Crown</h3><p>Seven chakra tiers. Rating after every match, seasons with rewards, a leaderboard you can link to.</p><span class="go">Check the leaderboard</span></div></a>
 </section>
 <!--#foot-->
 </body>

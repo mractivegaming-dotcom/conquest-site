@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Arsenal · Conquest</title>
 <link rel="stylesheet" href="site.css">
+<script>document.documentElement.classList.add("js")</script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="site.js" defer></script>
@@ -13,44 +14,34 @@
 <!--#nav-->
 <section class="arshead wrap">
   <div>
-    <div class="kicker">// arsenal · 41 weapons · 6 vehicles</div>
+    <div class="kicker">// arsenal · <span id="count">41</span> weapons · 6 vehicles</div>
     <h1 style="margin-top:12px">Arsenal</h1>
-    <p>Every weapon and vehicle in Conquest, with the numbers the game actually uses. Read straight from the weapon config, so it is never out of date.</p>
+    <p>Every weapon and vehicle in Conquest, with the numbers the game actually uses. Click a class, click a weapon, compare two.</p>
   </div>
-  <div class="search" style="width:380px"><input placeholder="Search weapons…"><a class="btn btn-ghost" href="#">Compare</a></div>
+  <div class="search" style="width:400px"><input id="q" placeholder="Search weapons…" autocomplete="off"><button class="btn btn-ghost" id="cmpbtn" type="button">Compare</button></div>
 </section>
-<section class="signs wrap">
-  <span class="sign">Assault</span><span class="sign on">Engineer</span><span class="sign">Recon</span><span class="sign">Support<span class="sub">LMG</span></span><span class="sign">Sidearms</span><span class="sign" id="vehicles">Vehicles</span>
-</section>
-<section class="wrap"><div class="featured">
-  <div class="keys"><span class="key">F</span><span class="key">E</span><span class="key">G</span><span class="key">C</span></div>
-  <div class="c">
-    <span class="kicker">Engineer · launcher · new animation</span>
-    <h2>NLAW</h2>
-    <p>Fire-and-forget anti-tank launcher. Lock on, loose, forget. The shoulder-carry animation shipped this week and the aim pitch now follows the launcher head.</p>
-    <div class="stats2">
-      <div class="statrow">Damage<div class="bar"><i style="width:98%"></i></div><b>98</b></div>
-      <div class="statrow">Lock time<div class="bar"><i style="width:58%"></i></div><b>2.4 s</b></div>
-      <div class="statrow">Range<div class="bar"><i style="width:84%"></i></div><b>800 m</b></div>
-      <div class="statrow">Reload<div class="bar"><i style="width:36%"></i></div><b>6.2 s</b></div>
-      <div class="statrow">Mobility<div class="bar w"><i style="width:40%"></i></div><b>40</b></div>
+<section class="signs wrap" id="signs"></section>
+<section class="wrap">
+  <div class="featured" id="featured">
+    <div class="keys"><span class="key" data-key="f">F</span><span class="key" data-key="e">E</span><span class="key" data-key="g">G</span><span class="key" data-key="c">C</span></div>
+    <div class="bigsil" id="bigsil"></div>
+    <div class="c">
+      <span class="kicker" id="f-tag"></span>
+      <h2 id="f-name"></h2>
+      <p id="f-desc"></p>
+      <div class="stats2" id="f-stats"></div>
     </div>
+    <div class="unlock" id="f-unlock"></div>
   </div>
-  <div class="unlock">Unlock · level 12 · 3 400 credits</div>
-</div></section>
+  <div class="compare" id="compare"></div>
+</section>
 <section class="arsgrid wrap">
   <div>
-    <div class="weapons" id="weapons"></div>
-    <div class="kicker" style="margin-top:30px">// vehicles · the hangar</div>
-    <div class="vehicles">
-      <div class="vcard"><div class="ph" style="background-image:url(img/veh-jet.jpg)"></div><div class="c"><h3>F-14 strike jet</h3><p>2 seats · AA missiles · bail-out</p></div></div>
-      <div class="vcard"><div class="ph" style="background-image:url(img/veh-heli.jpg)"></div><div class="c"><h3>Little Bird</h3><p>4 seats · minigun · fast insert</p></div></div>
-      <div class="vcard"><div class="ph" style="background-image:url(img/veh-bike.jpg)"></div><div class="c"><h3>Enduro bike</h3><p>1 seat · fastest on land</p></div></div>
-      <div class="vcard"><div class="ph" style="background-image:url(img/veh-car.jpg)"></div><div class="c"><h3>Jetski</h3><p>2 seats · water · bouncy swell</p></div></div>
-    </div>
+    <div class="weapons" id="grid"></div>
+    <div id="vehicles"></div>
   </div>
   <aside class="side" id="patch">
-    <div class="tile notes">
+    <div class="tile notes rv">
       <h3>Patch notes</h3>
       <div class="v"><b>v0.9.3</b><span>2026-10-07</span></div>
       <ul>
@@ -67,19 +58,10 @@
         <li><span class="tag fix">Fix</span>MG splinters and StanceMax clamp</li>
       </ul>
     </div>
-    <div class="tile"><h3>Roadmap</h3><p style="margin:8px 0 0;color:var(--muted);font-size:14px">Ranked seasons, the F-14 wreck model, a server browser on this site, Login with Roblox for player profiles.</p></div>
+    <div class="tile rv"><h3>Roadmap</h3><p style="margin:8px 0 0;color:var(--muted);font-size:14px">Ranked seasons, the F-14 wreck model, a server browser on this site, Login with Roblox for player profiles.</p></div>
   </aside>
 </section>
 <!--#foot-->
-<script>
-const SIL={
- smg:`<svg viewBox="0 0 140 60" fill="currentColor"><rect x="2" y="20" width="6" height="11" rx="1"/><rect x="6" y="23" width="22" height="5"/><rect x="26" y="19" width="80" height="15" rx="2"/><rect x="104" y="24" width="30" height="6" rx="1"/><rect x="50" y="13" width="10" height="6"/><rect x="97" y="14" width="5" height="5"/><polygon points="62,34 76,34 79,57 65,57"/><polygon points="84,34 95,34 97,52 88,52"/></svg>`,
- pdw:`<svg viewBox="0 0 140 60" fill="currentColor"><rect x="8" y="18" width="100" height="18" rx="6"/><rect x="106" y="24" width="28" height="6" rx="1"/><rect x="40" y="12" width="40" height="6" rx="2"/><polygon points="50,36 68,36 70,54 54,54"/><polygon points="78,36 90,36 92,50 84,50"/><rect x="2" y="20" width="8" height="14" rx="2"/></svg>`,
- pistol:`<svg viewBox="0 0 140 60" fill="currentColor"><rect x="30" y="14" width="90" height="16" rx="2"/><polygon points="34,30 60,30 56,58 30,58"/><rect x="60" y="30" width="10" height="8"/><rect x="112" y="18" width="12" height="8"/></svg>`};
-const W=[
- ["MP5-K","smg",[72,82,45],12],["UMP45","smg",[80,62,52],14],["P90","pdw",[60,95,58],18],["Vector","pdw",[66,99,40],22],
- ["MAC-10","smg",[58,98,32],9],["Uzi","smg",[62,88,38],7],["MP7","pdw",[64,92,55],20],["PP-19","smg",[70,78,60],16]];
-document.getElementById('weapons').innerHTML=W.map(w=>`<div class="wcard"><span class="tag lvl">Lvl ${w[3]}</span><div class="sil">${SIL[w[1]]}</div><h3>${w[0]}</h3><div class="cls">SMG · Engineer</div><div class="mini"><span>DMG</span><div class="bar"><i style="width:${w[2][0]}%"></i></div><span>RPM</span><div class="bar"><i style="width:${w[2][1]}%"></i></div><span>RNG</span><div class="bar"><i style="width:${w[2][2]}%"></i></div></div></div>`).join('');
-</script>
+<script src="arsenal.js" defer></script>
 </body>
 </html>

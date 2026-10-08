@@ -63,3 +63,65 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-hex]').forEach(e=>{const [seed,lines]=e.dataset.hex.split(',').map(Number);hexNoise(e,seed,lines)});
   document.querySelectorAll('[data-spark]').forEach(e=>{const [seed,n]=e.dataset.spark.split(',').map(Number);sparkline(e,seed,n)});
 });
+
+// ===== interactivity (all pages) =====
+(function(){
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // mobile menu
+  document.addEventListener('DOMContentLoaded',()=>{
+    const b=document.getElementById('burger'), m=document.getElementById('menu');
+    if(b&&m){ b.addEventListener('click',()=>{const open=m.classList.toggle('open'); b.setAttribute('aria-expanded',String(open))}); m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('open');b.setAttribute('aria-expanded','false')})); }
+    // reveal on scroll
+    const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'}):null;
+    const still=/[?&](still|t=)/.test(location.search);
+    window.reveal=(root)=>{(root||document).querySelectorAll('.rv:not(.in)').forEach(el=>{if(io&&!reduced&&!still) io.observe(el); else el.classList.add('in')})};
+    window.reveal();
+    // tilt on hover (pointer devices only)
+    if(matchMedia('(hover:hover)').matches&&!reduced){
+      document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('.tilt'); if(!t) return; const r=t.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5; t.style.transform=`perspective(900px) rotateX(${(-y*6).toFixed(2)}deg) rotateY(${(x*8).toFixed(2)}deg) translateY(-3px)`;});
+      document.addEventListener('mouseout',e=>{const t=e.target.closest&&e.target.closest('.tilt'); if(t&&!t.contains(e.relatedTarget)) t.style.transform='';});
+    }
+  });
+  // count-up numbers
+  window.countUp=function(el,target,opts){
+    opts=opts||{}; const fmt=opts.fmt||(n=>Math.round(n).toLocaleString('sv-SE'));
+    if(reduced||!(target>0)||/[?&](still|t=)/.test(location.search)){el.textContent=fmt(target);return}
+    const dur=opts.dur||900, t0=performance.now();
+    const step=now=>{const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3); el.textContent=fmt(target*e); if(p<1) requestAnimationFrame(step)};
+    requestAnimationFrame(step);
+  };
+  window.toast=function(msg){let t=document.querySelector('.toast'); if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)} t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200)};
+})();
+
+// ===== hero: reprogramming sequence timeline =====
+(function(){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const stage=document.querySelector('.stage'); if(!stage) return;
+    const figs=[...stage.querySelectorAll('.fig')], beam=stage.querySelector('.beam'), dust=stage.querySelector('.dust'), prog=stage.querySelector('.prog'), pbar=stage.querySelector('.pbar b');
+    const lines=[...document.querySelectorAll('.term .ln')], flash=stage.querySelector('.flash');
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const params=new URLSearchParams(location.search); const freeze=params.has('t')?parseFloat(params.get('t')):null;
+    const STAGE_X=[12.5,37.5,62.5,87.5], STATUS=['decompiled','ok','78%','deploy'], IDLE=['waiting','waiting','waiting','waiting'];
+    const DUR=10.5, MOVE0=0.6, MOVE1=8.6, LINE_AT=[4,20,40,60,92];
+    stage.classList.add('anim');
+    const setState=(t)=>{
+      const p=Math.max(0,Math.min(1,(t-MOVE0)/(MOVE1-MOVE0)));
+      const x=2+96*p;
+      if(beam) beam.style.left=x+'%';
+      if(dust) dust.style.transform=`translateX(${(x-72).toFixed(2)}%)`;
+      const pct=Math.round(x>=98?100:x);
+      if(prog) prog.firstChild.nodeValue=pct+'% ';
+      if(pbar) pbar.style.width=pct+'%';
+      figs.forEach((f,i)=>{const on=x>=STAGE_X[i]-2; if(on!==f.classList.contains('active')){f.classList.toggle('active',on); const s=f.querySelector('figcaption span'); if(s) s.textContent=on?STATUS[i]:IDLE[i]; if(on&&flash&&!reduced&&t>0.2){flash.classList.remove('go');void flash.offsetWidth;flash.classList.add('go')}}});
+      lines.forEach((l,i)=>{const show=pct>=LINE_AT[i]; l.classList.toggle('show',show); l.classList.toggle('last',show&&(i===lines.length-1||pct<LINE_AT[i+1]))});
+      const last=lines[lines.length-1]; if(last){const v=last.querySelector('.v'); if(v) v.textContent=pct>=99?'OK':'queued'; if(v) v.className='v '+(pct>=99?'ok':'q')}
+    };
+    if(freeze!=null){ setState(freeze); return; }
+    if(reduced){ setState(MOVE1+1); return; }
+    let start=performance.now(), paused=false, pauseAt=0;
+    const tick=now=>{ if(!paused){ let t=((now-start)/1000)%DUR; setState(t); } requestAnimationFrame(tick) };
+    requestAnimationFrame(tick);
+    figs.forEach(f=>{f.addEventListener('mouseenter',()=>{paused=true;pauseAt=performance.now()}); f.addEventListener('mouseleave',()=>{if(paused){start+=performance.now()-pauseAt;paused=false}})});
+    const rb=stage.querySelector('.replay'); if(rb) rb.addEventListener('click',()=>{start=performance.now();paused=false});
+  });
+})();
