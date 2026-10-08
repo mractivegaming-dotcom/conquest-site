@@ -19,6 +19,7 @@ for page in ROOT.glob('*.html'):
     html=page.read_text()
     key=re.search(r'data-page="(\w+)"',html).group(1)
     n=nav.replace(f'data-nav="{ACTIVE.get(key,key)}"', f'class="on" data-nav="{ACTIVE.get(key,key)}"')
+    if key=='home': n=n.replace('<div class="navbar">','<div class="navbar off">')
     html=html.replace('<!--#nav-->',n).replace('<!--#foot-->',foot)
     (DIST/page.name).write_text(bust(html)); print('built',page.name,len(html))
 for sub in ['b','c']:
