@@ -66,15 +66,23 @@
 
 <div class="ticker"><div class="track" id="ticker"></div></div>
 
-<section class="sec" id="classes">
-  <div class="sechead rv"><div><div class="kicker">// loadout</div><h2 style="margin-top:14px">Pick your class.</h2></div><p>Five walls in the armory, one for each role. Hover a class to see what hangs on it.</p><a class="more" href="../arsenal.html">Full arsenal</a></div>
-  <div class="posters rv" id="posters"></div>
+<section class="pin classes-pin" id="classes">
+  <div class="sticky">
+    <div class="bgtint" id="cls-tint"></div>
+    <div class="pin-head"><span class="kicker">// loadout · scroll to switch class</span><a class="more" href="../arsenal.html">Full arsenal</a></div>
+    <div id="cls-stage"></div>
+    <div class="steps" id="cls-steps"></div>
+  </div>
 </section>
 
-<section class="sec climb" id="climb">
-  <div class="sechead rv"><div><div class="kicker">// ranked</div><h2 style="margin-top:14px">The climb.</h2></div><p>Seven chakras from Root to Crown. Rating moves after every match, seasons reset with rewards.</p><a class="more" href="../ranks.html">Full leaderboard</a></div>
-  <div class="path rv" id="path"></div>
-  <div class="top3 rv" id="top3"></div>
+<section class="pin ranks-pin" id="climb">
+  <div class="sticky">
+    <div class="bgtint" id="rank-tint"></div>
+    <div class="pin-head"><span class="kicker">// ranked · seven chakras · unlocks per tier</span><a class="more" href="../ranks.html">Full leaderboard</a></div>
+    <div class="spine-h" id="spine"><div class="rail"><i id="rail-fill"></i></div><div class="orbs" id="orbs"></div></div>
+    <div id="tier-stage"></div>
+    <div class="world" id="world"></div>
+  </div>
 </section>
 
 <section class="sec hangar" id="hangar">

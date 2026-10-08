@@ -102,29 +102,83 @@ $('prev').onclick=()=>showStage(cur-1); $('next').onclick=()=>showStage(cur+1);
 addEventListener('keydown',e=>{if(e.key==='ArrowLeft') showStage(cur-1); if(e.key==='ArrowRight') showStage(cur+1)});
 showStage(3); hero.classList.remove('glitch');
 
-if(params.has('debug')){addEventListener('load',()=>{const r=s=>{const e=document.querySelector(s);if(!e)return s+': none';const b=e.getBoundingClientRect();return `${s}: x=${b.left.toFixed(0)} w=${b.width.toFixed(0)}`};const pre=document.createElement('pre');pre.id='dbg';pre.textContent=['html','body','.page','.cnav','.cnav-top','.mega','.mega-copy','#mega-title','.cta','.hud-stats','.ticker','#posters','#path','.hangar .grid2','.band'].map(r).join('\n')+'\nscrollWidth='+document.documentElement.scrollWidth+' innerWidth='+innerWidth;document.body.appendChild(pre)})}
-// ---------- sections (layout from B, look of A) ----------
+if(params.has('debug')){addEventListener('load',()=>{const r=s=>{const e=document.querySelector(s);if(!e)return s+': none';const b=e.getBoundingClientRect();return `${s}: x=${b.left.toFixed(0)} w=${b.width.toFixed(0)}`};const pre=document.createElement('pre');pre.id='dbg';pre.textContent=['html','body','.page','.cnav','.cnav-top','.mega','.mega-copy','#mega-title','.cta','.hud-stats','.ticker','#posters','#path','.hangar .grid2','.band'].map(r).join('\n')+'\nscrollWidth='+document.documentElement.scrollWidth+' innerWidth='+innerWidth+' innerHeight='+innerHeight+' scrollY='+scrollY+' scrollHeight='+document.documentElement.scrollHeight+' activeCls='+document.querySelectorAll('.cls.active').length+' classesTop='+document.getElementById('classes').getBoundingClientRect().top.toFixed(0)+' stickyH='+document.querySelector('#classes .sticky').offsetHeight;document.body.appendChild(pre)})}
+// ---------- scroll-driven stages: classes, ranks + world list ----------
 const SIL={
  rifle:'<svg viewBox="0 0 140 60" fill="currentColor"><polygon points="2,22 22,20 24,32 4,34"/><rect x="22" y="19" width="70" height="14" rx="2"/><rect x="90" y="22" width="46" height="6" rx="1"/><rect x="96" y="28" width="22" height="4"/><rect x="40" y="12" width="26" height="7" rx="1"/><rect x="88" y="15" width="4" height="7"/><polygon points="56,33 70,33 76,56 62,56"/><polygon points="80,33 91,33 93,50 85,50"/></svg>',
+ smg:'<svg viewBox="0 0 140 60" fill="currentColor"><rect x="2" y="20" width="6" height="11" rx="1"/><rect x="6" y="23" width="22" height="5"/><rect x="26" y="19" width="80" height="15" rx="2"/><rect x="104" y="24" width="30" height="6" rx="1"/><rect x="50" y="13" width="10" height="6"/><rect x="97" y="14" width="5" height="5"/><polygon points="62,34 76,34 79,57 65,57"/><polygon points="84,34 95,34 97,52 88,52"/></svg>',
+ pdw:'<svg viewBox="0 0 140 60" fill="currentColor"><rect x="8" y="18" width="100" height="18" rx="6"/><rect x="106" y="24" width="28" height="6" rx="1"/><rect x="40" y="12" width="40" height="6" rx="2"/><polygon points="50,36 68,36 70,54 54,54"/><polygon points="78,36 90,36 92,50 84,50"/><rect x="2" y="20" width="8" height="14" rx="2"/></svg>',
  launcher:'<svg viewBox="0 0 140 60" fill="currentColor"><rect x="4" y="22" width="132" height="14" rx="7"/><rect x="40" y="12" width="30" height="10" rx="3"/><rect x="46" y="8" width="8" height="5"/><polygon points="56,36 70,36 74,52 60,52"/><rect x="100" y="36" width="10" height="8"/><rect x="118" y="19" width="10" height="20" rx="3"/></svg>',
  sniper:'<svg viewBox="0 0 140 60" fill="currentColor"><polygon points="2,24 20,20 22,34 6,36"/><rect x="20" y="21" width="62" height="12" rx="2"/><rect x="80" y="24" width="58" height="5" rx="1"/><rect x="34" y="11" width="34" height="8" rx="3"/><rect x="30" y="17" width="6" height="5"/><rect x="62" y="17" width="6" height="5"/><polygon points="52,33 62,33 64,50 54,50"/><polygon points="72,33 82,33 84,48 76,48"/><rect x="100" y="29" width="3" height="12"/><rect x="110" y="29" width="3" height="12"/></svg>',
  lmg:'<svg viewBox="0 0 140 60" fill="currentColor"><polygon points="2,20 20,18 22,34 4,36"/><rect x="20" y="17" width="76" height="18" rx="3"/><rect x="94" y="23" width="44" height="7" rx="1"/><rect x="44" y="10" width="24" height="8" rx="1"/><rect x="48" y="35" width="26" height="18" rx="2"/><polygon points="80,35 92,35 94,52 86,52"/><rect x="104" y="30" width="3" height="16"/><rect x="118" y="30" width="3" height="16"/></svg>',
  pistol:'<svg viewBox="0 0 140 60" fill="currentColor"><rect x="30" y="14" width="90" height="16" rx="2"/><polygon points="34,30 60,30 56,58 30,58"/><rect x="60" y="30" width="10" height="8"/><rect x="112" y="18" width="12" height="8"/></svg>'};
+const WPN=(n,t,s,lk)=>({n,t,s,lk});
 const CLASSES=[
- {n:'01',name:'Assault',color:'#ffb347',sil:'rifle',line:'Rifles that work everywhere. The spine of every squad.',list:['AK-74','M4A1','SCAR-H','AUG A3','G36C','FAMAS']},
- {n:'02',name:'Engineer',color:'#4fd1ff',sil:'launcher',line:'SMGs up close and the NLAW for anything with an engine.',list:['NLAW','MP5-K','UMP45','P90','Vector','MP7']},
- {n:'03',name:'Recon',color:'#6c8cff',sil:'sniper',line:'One shot from the ridge. Downs a jet pilot through the canopy.',list:['AWM','M24','Mosin','SVD','Intervention','MK12']},
- {n:'04',name:'Support',color:'#ff5a5a',sil:'lmg',line:'Belts, bipods and suppression. Own the lane.',list:['M249','PKM','MG3','RPK','M60','Negev']},
- {n:'05',name:'Sidearms',color:'#f5f8ff',sil:'pistol',line:'Plan B for everyone. Plan A for the brave.',list:['M9','Glock 17','Desert Eagle','M1911','Five-seveN','Revolver']}];
-const TIERS=[["Root","#ff4b4b",0],["Sacral","#ff9a3c",800],["Solar","#ffd93b",1000],["Heart","#5fe07a",1200],["Throat","#4f8dff",1400],["Third Eye","#ff5ad6",1700],["Crown","#f4ecff",2000]];
+ {n:'01',name:'Assault',color:'#ffb347',tint:'rgba(255,179,71,.14)',line:'Rifles that work everywhere. The spine of every squad.',stats:[['Damage',76],['Range',62],['Mobility',62]],weapons:[WPN('AK-74','Assault rifle','rifle','Root'),WPN('M4A1','Assault rifle','rifle','Solar'),WPN('SCAR-H','Battle rifle','rifle','Heart'),WPN('AUG A3','Assault rifle','rifle','Throat'),WPN('G36C','Assault rifle','rifle','Sacral'),WPN('FAMAS','Burst rifle','rifle','Third Eye')]},
+ {n:'02',name:'Engineer',color:'#4fd1ff',tint:'rgba(79,209,255,.14)',line:'SMGs up close and the NLAW for anything with an engine.',stats:[['Damage',62],['Range',48],['Mobility',84]],weapons:[WPN('NLAW','Launcher','launcher','Throat'),WPN('MP5-K','SMG','smg','Root'),WPN('UMP45','SMG','smg','Sacral'),WPN('P90','PDW','pdw','Solar'),WPN('Vector','SMG','pdw','Throat'),WPN('MP7','PDW','pdw','Third Eye')]},
+ {n:'03',name:'Recon',color:'#6c8cff',tint:'rgba(108,140,255,.14)',line:'One shot from the ridge. Downs a jet pilot through the canopy.',stats:[['Damage',96],['Range',94],['Mobility',44]],weapons:[WPN('M24','Bolt-action','sniper','Root'),WPN('Mosin','Bolt-action','sniper','Sacral'),WPN('SVD','Marksman','sniper','Heart'),WPN('MK12 DMR','Marksman','rifle','Solar'),WPN('AWM','Bolt-action','sniper','Third Eye'),WPN('Intervention','Bolt-action','sniper','Crown')]},
+ {n:'04',name:'Support',color:'#ff5a5a',tint:'rgba(255,90,90,.14)',line:'Belts, bipods and suppression. Own the lane.',stats:[['Damage',78],['Range',68],['Mobility',36]],weapons:[WPN('M249','LMG','lmg','Root'),WPN('RPK','LMG','lmg','Sacral'),WPN('Negev','LMG','lmg','Solar'),WPN('PKM','LMG','lmg','Throat'),WPN('M60','LMG','lmg','Heart'),WPN('MG3','LMG','lmg','Third Eye')]},
+ {n:'05',name:'Sidearms',color:'#f5f8ff',tint:'rgba(245,248,255,.10)',line:'Plan B for everyone. Plan A for the brave.',stats:[['Damage',56],['Range',38],['Mobility',94]],weapons:[WPN('M9','Pistol','pistol','Root'),WPN('Glock 17','Pistol','pistol','Sacral'),WPN('M1911','Pistol','pistol','Solar'),WPN('Five-seveN','Pistol','pistol','Heart'),WPN('Desert Eagle','Pistol','pistol','Third Eye'),WPN('Revolver','Revolver','pistol','Crown')]}];
+const TIERS=[
+ {name:'Root',color:'#ff4b4b',min:0,desc:'Where every operator starts. The basic kit of each class is yours from the first match.',cos:['Starter camo']},
+ {name:'Sacral',color:'#ff9a3c',min:800,desc:'You have won more than you lost. Second weapons open across the wall.',cos:['Rust bike skin']},
+ {name:'Solar',color:'#ffd93b',min:1000,desc:'Consistent. Mid-tier rifles, PDWs and the Negev come off the rack.',cos:['Solar nameplate']},
+ {name:'Heart',color:'#5fe07a',min:1200,desc:'Top third of the server. Heavier hitters and access to the Little Bird.',cos:['Little Bird access']},
+ {name:'Throat',color:'#4f8dff',min:1400,desc:'The NLAW unlocks here. Vehicles start fearing you.',cos:['NLAW decal']},
+ {name:'Third Eye',color:'#ff5ad6',min:1700,desc:'Elite. The AWM, the MG3 and the F-14 seat are yours.',cos:['F-14 access','Frostbite camo']},
+ {name:'Crown',color:'#f4ecff',min:2000,desc:'Top of the world list. Intervention, the Revolver, and the aura every lobby can see.',cos:['Crown aura','Season title']}];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ease=t=>{t=clamp(t,0,1);return 1-Math.pow(1-t,3)};
+const isMobile=matchMedia('(max-width:860px)').matches;
+// build classes stage
+$('cls-stage').innerHTML=CLASSES.map((c,i)=>`<div class="cls" data-i="${i}" style="--pc:${c.color}"><div class="cls-name"><small>${c.n} · class</small><h2>${c.name}</h2><p>${c.line}</p><div class="cls-stats">${c.stats.map(s=>`<div class="statrow">${s[0]}<div class="bar"><i data-w="${s[1]}" style="width:0"></i></div><b>${s[1]}</b></div>`).join('')}</div></div><div class="cls-weapons">${c.weapons.map((w,k)=>`<div class="wpn" data-k="${k}">${SIL[w.s]}<div><b>${esc(w.n)}</b><span>${esc(w.t)}</span></div><span class="lk">${w.lk}</span></div>`).join('')}</div></div>`).join('');
+$('cls-steps').innerHTML=CLASSES.map(()=>'<i></i>').join('');
+// build ranks stage
+$('orbs').innerHTML=TIERS.map((t,i)=>`<div class="orb" style="left:${4+i*(92/6)}%;--tc:${t.color}">${window.orbSVG?window.orbSVG(t.color,44):''}<div><b>${t.name}</b>${t.min?fmt(t.min)+'+':'start'}</div></div>`).join('');
+const unlocksFor=t=>{const ws=[];CLASSES.forEach(c=>c.weapons.forEach(w=>{if(w.lk===t.name) ws.push({...w,cls:c})}));return ws};
+$('tier-stage').innerHTML=TIERS.map((t,i)=>{const ws=unlocksFor(t);return `<div class="tier" data-i="${i}" style="--tc:${t.color}"><div><div class="big">${t.name}</div><div class="thr">tier ${i+1} of 7 · <b>${t.min?fmt(t.min)+'+ rating':'start'}</b></div><p>${t.desc}</p></div><div class="unlocks">${ws.map(w=>`<div class="ul" style="--pc:${w.cls.color}"><div class="sil">${SIL[w.s]}</div><b>${esc(w.n)}</b><span>${esc(w.t)} · ${w.cls.name}</span></div>`).join('')}${t.cos.map(c=>`<div class="ul"><div class="cos"><i></i></div><b>${esc(c)}</b><span>cosmetic · unlock</span></div>`).join('')}</div></div>`}).join('');
+$('world').innerHTML=`<div><div class="kicker">// world list · season 1</div><h2 style="margin-top:14px">Top of the <em>world.</em></h2><p>The ten highest ratings on the planet right now, refreshed every five minutes straight from the game.</p><a class="btn btn-cyan" href="../ranks.html">Full leaderboard</a></div><div class="panel"><table class="lb"><thead><tr><th>#</th><th>Operator</th><th>Tier</th><th>Rating</th><th>Kills</th></tr></thead><tbody id="world-rows"></tbody></table></div>`;
+// scrub engine
+const clsEls=[...document.querySelectorAll('#cls-stage .cls')], stepEls=[...document.querySelectorAll('#cls-steps i')];
+const tierEls=[...document.querySelectorAll('#tier-stage .tier')], orbEls=[...document.querySelectorAll('#orbs .orb')];
+function animateClass(el,l,last){
+  const enter=ease(l/0.32), exit=last?0:ease((l-0.72)/0.28);
+  const name=el.querySelector('.cls-name');
+  name.style.transform=`translateX(${(-55+55*enter+35*exit).toFixed(2)}vw) skewX(${(-10+10*enter).toFixed(2)}deg)`;
+  name.style.opacity=(enter*(1-exit)).toFixed(3); name.style.filter=`blur(${((1-enter)*14+exit*10).toFixed(1)}px)`;
+  name.querySelectorAll('.bar i').forEach(b=>{b.style.width=(parseFloat(b.dataset.w)*ease((l-0.15)/0.3)).toFixed(1)+'%'});
+  el.querySelectorAll('.wpn').forEach(w=>{const k=+w.dataset.k; const e=ease((l-0.03*k)/0.3), x=last?0:ease((l-0.7-0.025*k)/0.28);
+    w.style.transform=`translateX(${(70-70*e+55*x).toFixed(2)}vw) translateY(${(k*10.2).toFixed(1)}vh) rotate(${(-6+6*e).toFixed(2)}deg)`;
+    w.style.opacity=(e*(1-x)).toFixed(3); w.style.filter=`blur(${((1-e)*12+x*8).toFixed(1)}px)`});
+}
+function pinProgress(el){const r=el.getBoundingClientRect(); const total=el.offsetHeight-innerHeight; return total>0?clamp(-r.top/total,0,1):1}
+const forceStage=params.get('stage'), forceF=parseFloat(params.get('f')||'0');
+if(forceStage){const hide=['.mega','.ticker','#intel','.hangar','.foot'].concat(forceStage==='classes'?['#climb']:forceStage==='ranks'?['#classes']:['#classes','#climb']); if(forceStage==='rest') hide.splice(hide.indexOf('#intel'),1), hide.splice(hide.indexOf('.hangar'),1), hide.splice(hide.indexOf('.foot'),1); hide.forEach(s=>document.querySelectorAll(s).forEach(e=>e.style.display='none'))}
+function scrub(){
+  if(isMobile) return;
+  const pc=pinProgress($('classes')); const fN=forceStage==='classes'?forceF:pc*CLASSES.length; const ci=Math.min(CLASSES.length-1,Math.floor(fN)); const cl=Math.min(fN-ci,1);
+  clsEls.forEach((el,i)=>{const on=i===ci; el.classList.toggle('active',on); if(on) animateClass(el,cl,i===CLASSES.length-1)});
+  stepEls.forEach((s,i)=>{s.classList.toggle('on',i===ci);s.classList.toggle('done',i<ci)});
+  $('cls-tint').style.setProperty('--tint',CLASSES[ci].tint);
+  const pr=pinProgress($('climb')); const steps=TIERS.length+1; const fR=forceStage==='ranks'?forceF:pr*steps; const ri=Math.min(steps-1,Math.floor(fR));
+  const tierIdx=Math.min(ri,TIERS.length-1);
+  $('rail-fill').style.width=(clamp(fR/(TIERS.length-1),0,1)*100).toFixed(1)+'%';
+  orbEls.forEach((o,i)=>{o.classList.toggle('on',i===ri);o.classList.toggle('lit',i<=tierIdx||ri===TIERS.length)});
+  tierEls.forEach((t,i)=>t.classList.toggle('active',i===ri));
+  $('world').classList.toggle('active',ri===TIERS.length);
+  $('rank-tint').style.setProperty('--tint',ri===TIERS.length?'rgba(79,209,255,.14)':hexTint(TIERS[tierIdx].color));
+}
+function hexTint(hex){const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},.14)`}
+let ticking=false; const onScroll=()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{scrub();ticking=false})}};
+addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); scrub();
+if(isMobile){document.querySelectorAll('.cls .bar i').forEach(b=>b.style.width=b.dataset.w+'%');document.querySelectorAll('.tier').forEach(t=>t.classList.add('active'));$('world').classList.add('active');orbEls.forEach(o=>o.classList.add('lit'))}
+if(params.has('scroll')){addEventListener('load',()=>{scrollTo(0,parseInt(params.get('scroll'),10));scrub()})}
 const VEH=[['F-14 strike jet','2 seats · AA missiles · bail-out','../img/veh-jet.jpg'],['Little Bird','4 seats · minigun · fast insert','../img/veh-heli.jpg'],['Enduro bike','1 seat · fastest on land','../img/veh-bike.jpg'],['Jetski','2 seats · water · bouncy swell','../img/veh-car.jpg'],['Humvee','4 seats · roof MG · takes two NLAW hits','../img/bg-hangar.jpg'],['Transport truck','8 seats · moves the whole team','../img/bg-hangar.jpg']];
-$('posters').innerHTML=CLASSES.map(c=>`<a class="poster" href="../arsenal.html?tab=${c.name.toLowerCase()}" style="--pc:${c.color}"><span class="num">${c.n}</span><div class="sil">${SIL[c.sil]}</div><div class="list">${c.list.join('<br>')}</div><div class="sign-lite"><h3>${c.name}</h3><p>${c.line}</p></div></a>`).join('');
-const pts=TIERS.map((t,i)=>[6+i*(88/6), 70-Math.sin(i/6*Math.PI)*34]);
-$('path').innerHTML=`<svg class="line" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#ff4b4b"/><stop offset=".5" stop-color="#5fe07a"/><stop offset="1" stop-color="#f4ecff"/></linearGradient></defs><path d="${pts.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')}" fill="none" stroke="url(#lg)" stroke-width=".6" vector-effect="non-scaling-stroke" opacity=".8"/></svg>`+TIERS.map((t,i)=>`<div class="orb" style="left:${pts[i][0]}%;top:${pts[i][1]}%;--tc:${t[1]}" title="${t[0]}: ${t[2]?fmt(t[2])+' rating and up':'start tier'}">${window.orbSVG?window.orbSVG(t[1],52):''}<div><b>${t[0]}</b>${t[2]?fmt(t[2])+'+':'start'}</div></div>`).join('');
 $('vlist').innerHTML=VEH.map((v,i)=>`<div class="vrow"><span class="n">0${i+1}</span><h3>${esc(v[0])}</h3><span class="spec">${esc(v[1])}</span><span class="thumb" style="background-image:url(${v[2]})"></span></div>`).join('');
 window.Save6Data.snapshot.then(snap=>{
   const board=snap.boards.rating?'rating':'kills', list=(snap.boards[board]||[]).slice(0,3);
-  $('top3').innerHTML=list.map((e,i)=>`<div class="t3 tilt"><span class="rank">${i+1}</span><div class="who"><b>${esc(e.displayName||e.name)}</b><span>${board==='rating'?(TIERS.slice().reverse().find(t=>e.value>=t[2])||TIERS[0])[0]:'season '+snap.season}</span></div><span class="val">${fmt(e.value)}</span></div>`).join('');
+  const top10=(snap.boards[board]||[]).slice(0,10); const tierOf=v=>TIERS.slice().reverse().find(t=>v>=t.min)||TIERS[0];
+  $('world-rows').innerHTML=top10.map(e=>{const t=tierOf(e.value); const k=(snap.boards.kills||[]).find(x=>x.userId===e.userId); return `<tr><td class="pos">${e.rank}</td><td><span class="pl"><i></i>${esc(e.displayName||e.name)}</span></td><td><span class="tier-tag" style="--tc:${t.color};display:inline-flex;align-items:center;gap:8px;font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:${t.color}">${window.orbSVG?window.orbSVG(t.color,16):''}${t.name}</span></td><td class="r">${fmt(e.value)}</td><td class="n">${k?fmt(k.value):'–'}</td></tr>`}).join('');
   const live=snap.live||{}, jets=(snap.boards.jets||[])[0], top=list[0];
   const items=[`<b>${fmt(live.playing??0)}</b> operators online`,`<b>${fmt(live.visits??0)}</b> visits all time`,`season 1 ends in <b>${window.Save6Data.countdown((window.SAVE6||{}).seasonEnd)}</b>`,top?`top ${board}: <b>${esc(top.displayName||top.name)}</b> ${fmt(top.value)}`:'',jets?`most jets downed: <b>${esc(jets.displayName||jets.name)}</b> ${fmt(jets.value)}`:'',`new: <b>NLAW shoulder carry</b> animation`,`new: <b>F-14 bail-out</b> crash sequence`].filter(Boolean);
   const html=items.map(s=>`<span>${s}</span>`).join(''); $('ticker').innerHTML=html+html;
