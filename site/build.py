@@ -5,7 +5,7 @@ ROOT=pathlib.Path(__file__).parent; DIST=ROOT/'dist'
 nav=(ROOT/'_nav.html').read_text(); foot=(ROOT/'_foot.html').read_text()
 ACTIVE={'home':'home','ranks':'ranks','arsenal':'arsenal'}
 DIST.mkdir(exist_ok=True)
-for d in ['img','fonts','b']:
+for d in ['img','fonts','b','c']:
     if (DIST/d).exists(): shutil.rmtree(DIST/d)
     shutil.copytree(ROOT/d, DIST/d)
 for f in list(ROOT.glob('*.css'))+list(ROOT.glob('*.js')): shutil.copy(f, DIST/f.name)
